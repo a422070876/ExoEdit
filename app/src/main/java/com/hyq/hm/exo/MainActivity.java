@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
@@ -61,6 +62,28 @@ public class MainActivity extends AppCompatActivity {
 
         seekBar = findViewById(R.id.seek_bar);
         playView = findViewById(R.id.play_view);
+
+        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                if(player != null){
+                    screenWidth = width;
+                    screenHeight = height;
+                    player.setVideoSurface(holder.getSurface());
+                    player.setPlayWhenReady(isPlayer);
+                }
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+
+            }
+        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -228,6 +251,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         player.prepare(videoSource);
+        if(mSurface == null && surfaceView.getWidth() != 0 && surfaceView.getHeight() != 0){
+            screenWidth = surfaceView.getWidth();
+            screenHeight = surfaceView.getHeight();
+            player.setVideoSurface(surfaceView.getHolder().getSurface());
+        }
     }
     private boolean isTracking = false;
     private void videoTime(){
@@ -264,30 +292,9 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
         isResume = true;
-        if(player != null){
-            player.setPlayWhenReady(isPlayer);
-        }
-        surface();
-    }
-    private void surface(){
-        surfaceView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(mSurface == null){
-                    if(player != null && surfaceView.getHolder().getSurface() != null && surfaceView.getWidth() != 0 && surfaceView.getHeight() != 0){
-                        screenWidth = surfaceView.getWidth();
-                        screenHeight = surfaceView.getHeight();
-                        player.setVideoSurface(surfaceView.getHolder().getSurface());
-                    }else{
-                        if(isResume){
-                            surface();
-                        }
-                    }
-                }
-            }
-        },100);
 
     }
+
     @Override
     protected void onPause() {
         super.onPause();
