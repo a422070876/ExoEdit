@@ -228,11 +228,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         player.prepare(videoSource);
-        if(screenWidth == 0 && surfaceView.getWidth() != 0){
-            screenWidth = surfaceView.getWidth();
-            screenHeight = surfaceView.getHeight();
-            player.setVideoSurface(surfaceView.getHolder().getSurface());
-        }
     }
     private boolean isTracking = false;
     private void videoTime(){
@@ -284,7 +279,9 @@ public class MainActivity extends AppCompatActivity {
                         screenHeight = surfaceView.getHeight();
                         player.setVideoSurface(surfaceView.getHolder().getSurface());
                     }else{
-                        surface();
+                        if(isResume){
+                            surface();
+                        }
                     }
                 }
             }
