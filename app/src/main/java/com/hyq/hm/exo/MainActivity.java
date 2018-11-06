@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRelease() {
                 if(frame != null){
-                    frame.release();
+                    frame.releaseFrame();
                 }
                 if(eglUtils != null){
                     eglUtils.release();
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
             player.stop();
             player.release();
         }
-
+        frame.release();
     }
 
     public void onPlayer(View view){

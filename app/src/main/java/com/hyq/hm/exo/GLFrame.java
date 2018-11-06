@@ -107,7 +107,9 @@ public class GLFrame {
         GLES20.glTexParameterf(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER,
                 GLES20.GL_LINEAR);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-
+        if(surfaceTexture != null){
+            surfaceTexture.release();
+        }
         surfaceTexture = new SurfaceTexture(textures[0]);
     }
 
@@ -181,13 +183,15 @@ public class GLFrame {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }
 
+    public void releaseFrame(){
+        GLES20.glDeleteProgram(programId);
+        GLES20.glDeleteTextures(1,textures,0);
+
+    }
     public void release(){
         if(surfaceTexture != null){
-            GLES20.glDeleteProgram(programId);
-            GLES20.glDeleteTextures(1,textures,0);
             surfaceTexture.release();
             surfaceTexture = null;
         }
     }
-
 }
