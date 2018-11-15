@@ -180,22 +180,17 @@ public class MainActivity extends AppCompatActivity {
         player.addVideoTiemListener(new VideoTimeListener() {
 
             @Override
-            public Surface onSurface(Surface surface) {
+            public Surface onSurface(Surface surface,int width, int height) {
                 if(surface == null){
                     return null;
                 }
                 frame.screenSize(screenWidth,screenHeight);
+                frame.videoSize(width,height);
                 eglUtils.initEGL(surface);
                 frame.initFrame();
                 mSurface = new Surface(frame.getSurfaceTexture());
                 return mSurface;
             }
-
-            @Override
-            public void onSizeChanged(int width, int height) {
-                frame.videoSize(width,height);
-            }
-
             @Override
             public void onVideoTimeChanged(long time) {
                 frame.drawFrame();

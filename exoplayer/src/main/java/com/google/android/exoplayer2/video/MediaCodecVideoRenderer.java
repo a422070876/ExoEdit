@@ -388,12 +388,8 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
   }
 
   private void setSurface(Surface surface) throws ExoPlaybackException {
-    Surface s = null;
-    if(timeListener != null){
-      s = timeListener.onSurface(surface);
-    }
-    if(s != null){
-      surface = s;
+    if(timeListener != null && currentWidth != Format.NO_VALUE && currentHeight != Format.NO_VALUE){
+      surface = timeListener.onSurface(surface,currentWidth,currentHeight);
     }
     if (surface == null) {
       // Use a dummy surface if possible.
@@ -409,7 +405,6 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
     }
     // We only need to update the codec if the surface has changed.
     if (this.surface != surface) {
-
       this.surface = surface;
       int state = getState();
       if (state == STATE_ENABLED || state == STATE_STARTED) {
@@ -463,10 +458,12 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
       surface = dummySurface;
     }
     timeUsIndex = timeIndex = 0;
+    Surface s = surface;
     if(timeListener != null){
-      timeListener.onSizeChanged(mediaFormat.getInteger(MediaFormat.KEY_WIDTH),mediaFormat.getInteger(MediaFormat.KEY_HEIGHT));
+      s = timeListener.onSurface(surface,mediaFormat.getInteger(MediaFormat.KEY_WIDTH),mediaFormat.getInteger(MediaFormat.KEY_HEIGHT));
+      surface = s;
     }
-    codec.configure(mediaFormat, surface, crypto, 0);
+    codec.configure(mediaFormat, s, crypto, 0);
 
     if (Util.SDK_INT >= 23 && tunneling) {
       tunnelingOnFrameRenderedListener = new OnFrameRenderedListenerV23(codec);
